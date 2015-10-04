@@ -12,7 +12,16 @@ define = (function () {
 	var pendingModules = {};
 
 	function ensureDependencies(dependencies, callback) {
-		var waiting = dependencies.length;
+		var missingDependencies = dependencies.filter(function (depenency) {
+			return !loadedModules[depenency];
+		});
+
+		var waiting = missingDependencies.length;
+
+		if (waiting === 0) {
+			callback();
+			return;
+		}
 
 		function dependencyReady() {
 			waiting--;
@@ -21,20 +30,13 @@ define = (function () {
 			}
 		}
 
-		dependencies.forEach(function (dependency) {
-			if (loadedModules[dependency]) {
-				waiting--;
-			} else if (pendingModules[dependency]) {
-				pendingModules[dependency].push(dependencyReady);
-			} else {
+		missingDependencies.forEach(function (dependency) {
+			if (!pendingModules[dependency]) {
 				loadModule(dependency + '.js');
-				pendingModules[dependency] = [dependencyReady];
+				pendingModules[dependency] = [];
 			}
+			pendingModules[dependency].push(dependencyReady);
 		});
-
-		if (waiting === 0) {
-			callback();
-		}
 	}
 
 	function moduleReady(id) {
