@@ -1,7 +1,11 @@
 /* Some of the CSS is based on the CSS-Diner: https://github.com/flukeout/restaurant/ */
 
+body {
+	background: #38342A;
+}
+
 #kitchen-table {
-	font-size: 120px;
+	font-size: 100px;
 	letter-spacing: 50px;
 	text-align: left;
 	padding: 20px;
