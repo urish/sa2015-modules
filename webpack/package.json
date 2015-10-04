@@ -1,0 +1,15 @@
+{
+  "name": "breakfast-webpack",
+  "version": "1.0.0",
+  "description": "Webpack Demo",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server app/main.js --content-base .."
+  },
+  "author": "Uri Shaked",
+  "license": "ISC",
+  "devDependencies": {
+    "webpack": "^1.12.2",
+    "webpack-dev-server": "^1.12.0"
+  }
+}
