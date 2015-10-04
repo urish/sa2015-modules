@@ -1,49 +1,59 @@
 define = (function () {
-    'use strict';
+	'use strict';
 
-    function loadModule(url, callback) {
-        var scriptElm = document.createElement('script');
-        scriptElm.src = url;
-        scriptElm.onload = callback;
-        document.head.appendChild(scriptElm);
-    }
+	function loadModule(url, callback) {
+		var scriptElm = document.createElement('script');
+		scriptElm.src = url;
+		scriptElm.onload = callback;
+		document.head.appendChild(scriptElm);
+	}
 
-    var loadedModules = {};
-    var pending = {};
+	var loadedModules = {};
+	var pendingModules = {};
 
-    function define(name, dependencies, factory) {
-        var waiting = dependencies.length;
+	function ensureDependencies(dependencies, callback) {
+		var waiting = dependencies.length;
 
-        function checkReady() {
-            if (waiting === 0) {
-                var args = dependencies.map(function (dependency) {
-                    return loadedModules[dependency];
-                });
-                loadedModules[name] = factory.apply(this, args);
-                (pending[name] || []).forEach(function (callback) {
-                    callback();
-                });
-            }
-        }
+		function dependencyReady() {
+			waiting--;
+			if (waiting === 0) {
+				callback();
+			}
+		}
 
-        function dependencyReady() {
-            waiting--;
-            checkReady();
-        }
+		dependencies.forEach(function (dependency) {
+			if (loadedModules[dependency]) {
+				waiting--;
+			} else if (pendingModules[dependency]) {
+				pendingModules[dependency].push(dependencyReady);
+			} else {
+				loadModule(dependency + '.js');
+				pendingModules[dependency] = [dependencyReady];
+			}
+		});
 
-        dependencies.forEach(function (dependency) {
-            if (loadedModules[dependency]) {
-                dependencyReady();
-            } else if (pending[dependency]) {
-                pending[dependency].push(dependencyReady);
-            } else {
-                loadModule(dependency + '.js');
-                pending[dependency] = [dependencyReady];
-            }
-        });
+		if (waiting === 0) {
+			callback();
+		}
+	}
 
-        checkReady();
-    }
+	function moduleReady(id) {
+		if (pendingModules[id]) {
+			pendingModules[id].forEach(function (callback) {
+				callback();
+			})
+		}
+	}
 
-    return define;
+	function define(id, dependencies, factory) {
+		ensureDependencies(dependencies, function () {
+			var args = dependencies.map(function (dependency) {
+				return loadedModules[dependency];
+			});
+			loadedModules[id] = factory.apply(this, args);
+			moduleReady(id);
+		});
+	}
+
+	return define;
 })();
