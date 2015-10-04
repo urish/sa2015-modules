@@ -1,0 +1,25 @@
+<html>
+	<head>
+		<title>SystemJS Breakfast</title>
+		<link rel="stylesheet" href="../common/demo.css"/>
+	</head>
+
+	<body>
+		<div class="table-container">
+			<div class="table-wrapper">
+				<div id="kitchen-table" class="table"></div>
+			</div>
+			<div class="table-edge">
+				<div class="table-leg"></div>
+				<div class="table-leg"></div>
+			</div>
+		</div>
+
+		<script src="lib/system.js"></script>
+		<script src="config.js"></script>
+
+		<script>
+			System.load('app/demo.js');
+		</script>
+	</body>
+</html>
