@@ -4,7 +4,9 @@ define('Breakfast', ['CoffeeMachine', 'Oven'], function (CM, Oven) {
     function make() {
         CM.makeCoffee();
         Oven.bake('cake');
+
         breakfastCounter++;
+		console.log('Breakfast #' + breakfastCounter + ' is being served !');
     }
 
     return {
